@@ -1,7 +1,6 @@
 package io.github.madushanka.pos.controller;
 
 import com.jfoenix.controls.JFXProgressBar;
-import io.github.madushanka.pos.db.JPAUtill;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
@@ -23,6 +22,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import lk.ijse.dep.crypto.DEPCrypt;
+import org.springframework.core.env.Environment;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,6 +48,22 @@ public class MainFormController implements Initializable {
     private Label lblMenu;
     @FXML
     private Label lblDescription;
+
+    private Environment env;
+
+    private String getUserName(){ return DEPCrypt.decode(env.getRequiredProperty("javax.persistence.jdbc.user"),"123");
+    }
+    private String getPassword(){ return DEPCrypt.decode(env.getRequiredProperty("javax.persistence.jdbc.password"),"123");
+    }
+    private String getHost(){
+        return env.getRequiredProperty("pos.ip");
+    }
+    private String getPort(){
+        return env.getRequiredProperty("pos.port");
+    }
+    private String getDB(){
+        return env.getRequiredProperty("pos.db");
+    }
 
     public void initialize(URL url, ResourceBundle rb) {
         FadeTransition fadeIn = new FadeTransition(Duration.millis(2000), root);
@@ -161,10 +178,10 @@ public class MainFormController implements Initializable {
 
         if (file != null) {
             String[] commands;
-            if (JPAUtill.getPassword().length() > 0) {
-                commands = new String[]{"mysql", "-h", JPAUtill.getIp(), "--port", JPAUtill.getPort(), "-u", JPAUtill.getUser(), "-p" + JPAUtill.getPassword(), JPAUtill.getDB(), "-e", "source " + file.getAbsolutePath()};
+            if (getPassword().length() > 0) {
+                commands = new String[]{"mysql", "-h", getHost(), "--port", getPort(), "-u", getUserName(), "-p" + getPassword(), getDB(), "-e", "source " + file.getAbsolutePath()};
             } else {
-                commands = new String[]{"mysql", "-h", JPAUtill.getIp(), "--port", JPAUtill.getPort(), "-u", JPAUtill.getUser(), JPAUtill.getDB(), "-e", "source " + file.getAbsolutePath()};
+                commands = new String[]{"mysql", "-h", getHost(), "--port", getPort(), "-u", getUserName(), getDB(), "-e", "source " + file.getAbsolutePath()};
             }
             this.root.getScene().setCursor(Cursor.WAIT);
             pgb.setVisible(true);
@@ -209,8 +226,8 @@ public class MainFormController implements Initializable {
         if (file != null) {
             Process process = null;
             try {
-                process = Runtime.getRuntime().exec("mysqldump -h" + JPAUtill.getIp() + " -u" + JPAUtill.getUser() + " -p"
-                        + JPAUtill.getPassword() + " " + JPAUtill.getDB() + " --result-file "
+                process = Runtime.getRuntime().exec("mysqldump -h" + getHost() + " -u" + getUserName() + " -p"
+                        + getPassword() + " " + getDB() + " --result-file "
                         + file.getAbsolutePath() + (file.getAbsolutePath().endsWith(".sql") ? "" : ".sql"));
                 int exitCode = process.waitFor();
                 pgb.setVisible(true);

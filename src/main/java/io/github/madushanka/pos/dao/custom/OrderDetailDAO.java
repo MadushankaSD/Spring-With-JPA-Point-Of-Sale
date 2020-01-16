@@ -7,6 +7,6 @@ import io.github.madushanka.pos.entity.OrderDetailPK;
 
 public interface OrderDetailDAO extends CrudDAO<OrderDetail, OrderDetailPK> {
 
-    boolean existsByItemCode(String itemCode) throws Exception;
+    boolean existsByItemCode(String itemCode);
 
 }

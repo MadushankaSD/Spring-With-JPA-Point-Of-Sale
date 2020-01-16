@@ -6,12 +6,13 @@ import io.github.madushanka.pos.dao.CrudDAOImpl;
 import io.github.madushanka.pos.dao.custom.ItemDAO;
 import io.github.madushanka.pos.entity.Item;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class ItemDAOImpl extends CrudDAOImpl<Item,String> implements ItemDAO {
 
     @Override
-    public String getLastItemCode() throws Exception {
+    public String getLastItemCode() {
        return (String) entityManager.createNativeQuery("SELECT code FROM Item ORDER BY code DESC LIMIT 1").getSingleResult();
     }
 

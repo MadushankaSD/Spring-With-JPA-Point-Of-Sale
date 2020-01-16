@@ -5,13 +5,18 @@ import io.github.madushanka.pos.dao.CrudDAOImpl;
 import io.github.madushanka.pos.dao.custom.OrderDetailDAO;
 import io.github.madushanka.pos.entity.OrderDetail;
 import io.github.madushanka.pos.entity.OrderDetailPK;
+import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
+import javax.persistence.Query;
+
+@Repository
 public class OrderDetailDAOImpl extends CrudDAOImpl<OrderDetail, OrderDetailPK> implements OrderDetailDAO {
 
     @Override
-    public boolean existsByItemCode(String itemCode) throws Exception {
-        return entityManager.createNativeQuery("SELECT * FROM OrderDetail WHERE itemCode=?").setParameter(1, itemCode).getSingleResult() != null;
+    public boolean existsByItemCode(String itemCode) {
+        NativeQuery query = (NativeQuery) entityManager.createNativeQuery("SELECT * FROM OrderDetail WHERE Item_id=?").setParameter(1, itemCode);
+        return query.getResultList().isEmpty()?false:true;
     }
 }

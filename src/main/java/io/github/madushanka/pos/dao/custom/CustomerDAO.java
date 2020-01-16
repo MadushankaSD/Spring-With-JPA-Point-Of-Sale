@@ -6,6 +6,6 @@ import io.github.madushanka.pos.entity.Customer;
 
 public interface CustomerDAO extends CrudDAO<Customer, String> {
 
-    String getLastCustomerId() throws Exception;
+    String getLastCustomerId();
 
 }
